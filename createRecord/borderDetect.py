@@ -122,41 +122,8 @@ def cr_borderDetectLU(img,lC,uC):
 
     return width2field(y["min"],x["min"],x["max"],1 if shape[1]/2 > x["max"] else 2)
 
-
-    return {
-        "minX" : x["min"],
-        "maxX" : x["max"],
-        "minY" : y["min"],
-        "maxY" : y["max"]
-    }
-
 def cr_borderDetect(img):
     #make mask
     lower_frame_r = np.array([165,0,100])
     upper_frame_r = np.array([180,120,255])
-    # lower_frame_b = np.array([90,100,100])
-    # upper_frame_b = np.array([103,200,250])
-    # b = cr_borderDetectLU(img,lower_frame_r,upper_frame_r)
-    # shape = img.shape
-    # player = 1 if shape[1]/2 < b["maxX"] else 2
     return cr_borderDetectLU(img,lower_frame_r,upper_frame_r)
-    # if shape[1]/2 < b["maxX"]:
-    #     return {
-    #         "red" : b,
-    #         "blue": {
-    #             "minX":shape[1] - b["maxX"],
-    #             "maxX":shape[1] - b["maxX"] + (b["maxX"]-b["minX"]),
-    #             "minY":b["minY"],
-    #             "maxY":b["maxY"]
-    #         }
-    #     }
-    # else:
-    #     return {
-    #         "red" : b,
-    #         "blue": {
-    #             "minX":shape[1] - b["minX"] - (b["maxX"]-b["minX"]),
-    #             "maxX":shape[1] - b["minX"],
-    #             "minY":b["minY"],
-    #             "maxY":b["maxY"]
-    #         }
-    #     }

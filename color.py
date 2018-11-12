@@ -6,6 +6,11 @@ from matplotlib import pyplot as plt
 from createRecord.countWhite import countWhite
 from createRecord.borderDetect import cr_borderDetect as borderDetect
 from createRecord.vsAreaDetect import vsAreaDetect
+from createRecord.isPuyoColor import field2array
+
+#遊び
+import time
+
 plt.gray()
 
 #動画に対して本来は外部のjsonなどで自身で設定して読み込む項目
@@ -18,7 +23,7 @@ def nextPuyoDetect(img,bR,bB):
         min
 
 
-img = cv2.imread("./test.png")
+img = cv2.imread("./test4.png")
 #ゲームの枠で切り抜く
 game_frame = vsAreaDetect(img)
 if not SCREEN_ONLY:
@@ -41,22 +46,37 @@ img_color = cv2.bitwise_and(rgb_img, rgb_img, mask=img_mask)
 
 # 指定した色に基づいたマスク画像の生成
 # img_mask_blue = cv2.inRange(hsv_img, lower_blue, upper_blue)
-# img_mask = cv2.inRange(hsv_img, lower_green, upper_green)
+img_mask = cv2.inRange(hsv_img, lower_green, upper_green)
 # img_mask = cv2.inRange(hsv_img, lower_frame_r, upper_frame_r)
 
 # 枠見つける
 area = borderDetect(img)
 # 枠線つける
 #field
-v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
-#next
-v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
-#wnext
-v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
+# v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
+# v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
+# #next
+# v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
+# v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
+# #wnext
+# v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
+# v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
 
+# plt.imshow(v_img)
+# plt.show()
+
+p = field2array(img,area)
+for i in range(12):
+    for j in range(6):
+        if p["field"]["1p"][i][j]["GREEN"] > 10:
+            print(i,j,p["field"]["1p"][i][j]["GREEN"])
+
+for i in range(10):
+    time.sleep(0.1)
+    print("\007")
+
+plt.imshow(img_mask)
+plt.show()
 # nextPuyoDetect(img,bR,bB)
 
 # vImg = cv2.rectangle(cImg,(point["LT"][0],point["LT"][1]),(point["RB"][0],point["RB"][1]),(0,0,255),10)
@@ -66,6 +86,3 @@ v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["
 # v_img = extractColor(img,lower_frame_b,upper_frame_b)
 
 #gray = extractColor(rgb_img,lower_green,upper_green)
-
-plt.imshow(v_img)
-plt.show()
