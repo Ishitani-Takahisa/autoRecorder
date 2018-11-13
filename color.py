@@ -36,6 +36,9 @@ rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 lower_green = np.array([50,100,100])
 upper_green = np.array([70,255,255])
 
+lower = np.array([178,130,128])
+upper = np.array([180,255,255])
+
 # 2hsv
 hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 # make mask
@@ -46,7 +49,7 @@ img_color = cv2.bitwise_and(rgb_img, rgb_img, mask=img_mask)
 
 # 指定した色に基づいたマスク画像の生成
 # img_mask_blue = cv2.inRange(hsv_img, lower_blue, upper_blue)
-img_mask = cv2.inRange(hsv_img, lower_green, upper_green)
+img_mask = cv2.inRange(hsv_img, lower, upper)
 # img_mask = cv2.inRange(hsv_img, lower_frame_r, upper_frame_r)
 
 # 枠見つける
@@ -68,12 +71,12 @@ area = borderDetect(img)
 p = field2array(img,area)
 for i in range(12):
     for j in range(6):
-        if p["field"]["1p"][i][j]["GREEN"] > 10:
-            print(i,j,p["field"]["1p"][i][j]["GREEN"])
+        if p["field"]["1p"][i][j]["RED"] > 5:
+            print(i,j,p["field"]["1p"][i][j]["RED"])
 
-for i in range(10):
-    time.sleep(0.1)
-    print("\007")
+# for i in range(10):
+#     time.sleep(0.1)
+#     print("\007")
 
 plt.imshow(img_mask)
 plt.show()

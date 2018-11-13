@@ -41,12 +41,12 @@ def field2array(img,area):
 
     #色の設定
     C_IMG = {
-        "RED":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
+        "RED":extractColor(img,np.array([178,130,128]),np.array([180,255,255])),
         "GREEN":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
-        "BLUE":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
-        "YELLOW":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
-        "PURPLE":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
-        "OJAMA":extractColor(img,np.array([50,100,100]),np.array([70,255,255]))
+        "BLUE":extractColor(img,np.array([100,50,50]),np.array([120,255,255])),
+        "YELLOW":extractColor(img,np.array([20,50,230]),np.array([30,255,255])),
+        "PURPLE":extractColor(img,np.array([130,50,180]),np.array([140,255,255])),
+        "OJAMA":extractColor(img,np.array([0,0,0]),np.array([250,10,230]))
     }
     C_LEN = len(C_IMG)
 
