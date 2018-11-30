@@ -5,7 +5,6 @@ from createRecord.utils.my_mean import myMean
 from createRecord.countWhite import countWhite
 from createRecord.extractColor import extractColor
 
-
 def width2field(top,left,right,player):
     # def kiriyoku(n,m):
     #     return n if n%m==0 else n+(m-n%m) if n%m>m/2 else n-n%m
@@ -46,11 +45,19 @@ def width2field(top,left,right,player):
         "1p": _next["1p"]+round(0.15*field["width"]),
         "2p": _next["2p"]-round(0.1*field["width"])
     }
+    _points = {
+        "top": field["top"]+field["height"]+round(field["width"]/60),
+        "width": field["width"],
+        "height": round(field["width"]/6),
+        "1p": field["1p"],
+        "2p": field["2p"]
+    }
 
     return {
         "field":field,
         "next": _next,
-        "wnext": _wnext
+        "wnext": _wnext,
+        "points": _points
     }
 
 
@@ -93,23 +100,32 @@ def cr_borderDetectLU(img,lC,uC):
             "max" : maxY
         }
     
-    #要調整
+    # TODO : 要調整
+    # yがいっぱいあるところ見る
     def getX(listY,n):
-
+        print(shape[1],shape[1]/n)
         lineX = []
         # yが多い所 == 枠の縦線 , key == x
         for k,v in listY.items():
+            if v > 100:
+                print(k,v)
             if v > shape[1] / n:
                 lineX.append(int(k))
         minX = 0
         maxX = shape[1]
         length = len(listY)
         meanX = myMean(lineX)
+        print("平均",meanX)
         for x in lineX:
             if meanX > x and minX < x:
                 minX = x
             elif meanX < x and maxX > x:
                 maxX = x
+
+        
+        print("maxX = ",maxX)
+        print("minX = ",minX)
+        print(shape[0])
 
         return {
             "min" : minX,
@@ -123,7 +139,8 @@ def cr_borderDetectLU(img,lC,uC):
     return width2field(y["min"],x["min"],x["max"],1 if shape[1]/2 > x["max"] else 2)
 
 def cr_borderDetect(img):
+    print(img.shape)
     #make mask
-    lower_frame_r = np.array([165,0,100])
-    upper_frame_r = np.array([180,120,255])
+    lower_frame_r = np.array([165,60,160])
+    upper_frame_r = np.array([180,150,255])
     return cr_borderDetectLU(img,lower_frame_r,upper_frame_r)

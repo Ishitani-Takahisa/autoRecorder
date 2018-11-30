@@ -3,17 +3,18 @@ import cv2
 from matplotlib import pyplot as plt
 
 plt.gray()
-img = cv2.imread("./test2.png")
+img = cv2.imread("./test/sample.jpg")
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 # 2hsv
 hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 l = [0 for i in range(3)]
 u = [255 for i in range(3)]
-lower = np.array([178,130,128])
-upper = np.array([180,255,255])
+lower = np.array([100,50,50])
+upper = np.array([120,255,255])
 text = ["H","S","V"]
 
+# TODO : BLUEの修正
 while True:
     command = input("どちらを変更しますか l/u？")
     if command == ("l" or "L"):
