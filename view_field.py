@@ -22,15 +22,17 @@ class pycolor:
     REVERCE = '\033[07m'
 
 def write_puyo(puyo):
-    if puyo is 0:
+    if puyo is "NULL":
         sys.stdout.write("  ")
-    elif puyo is 1:
+    elif puyo is "RED":
         sys.stdout.write(pycolor.RED + "● " + pycolor.END)
-    elif puyo is 2:
+    elif puyo is "BLUE":
         sys.stdout.write(pycolor.BLUE + "● " + pycolor.END)
-    elif puyo is 3:
+    elif puyo is "YELLOW":
         sys.stdout.write(pycolor.YELLOW + "● " + pycolor.END)
-    elif puyo is 4:
+    elif puyo is "GREEN":
+        sys.stdout.write(pycolor.GREEN + "● " + pycolor.END)
+    elif puyo is "PURPLE":
         sys.stdout.write(pycolor.PURPLE + "● " + pycolor.END)
 
 def view_field(field,next):
@@ -98,19 +100,19 @@ def view_field(field,next):
 
 
 test = [
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,0,0,0,0,0],
-			[0,4,0,3,1,2],
-			[3,3,3,1,2,2],
-			[4,4,4,3,1,1]
-    ]
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","NULL","NULL","NULL","NULL","NULL"],
+    ["NULL","YELLOW","NULL","GREEN","RED","BLUE"],
+    ["GREEN","GREEN","GREEN","RED","BLUE","BLUE"],
+    ["YELLOW","YELLOW","YELLOW","GREEN","RED","RED"]
+]
 if __name__ == "__main__":
-    view_field([test,test],[[[1,1],[1,2]],[[2,2],[3,2]]])
+    view_field([test,test],[[["RED","RED"],["YELLOW","GREEN"]],[["GREEN","GREEN"],["BLUE","GREEN"]]])
