@@ -38,37 +38,63 @@ def view_field(field,next):
     
     Parameters
     ----------
-    field : [13][6]
+    field : [2][13][6]
         ぷよぷよのフィールド
-    next : function
-        [description]
+        [2]はプレイヤー
+    next : [2][2][2]
+        player - next&wnext - tumo
     
     """
 
 
-    sys.stdout.write(pycolor.CYAN + "---------------   -----\n" + pycolor.END)
+    sys.stdout.write(pycolor.CYAN + "---------------   -----     -----   ---------------\n" + pycolor.END)
     for i in range(13):
         sys.stdout.write(pycolor.CYAN +"| " + pycolor.END)
         for j in range(6):
-            write_puyo(field[i][j])
+            write_puyo(field[0][i][j])
 
         if i is 0 or i is 1:
             sys.stdout.write(pycolor.CYAN + "|   | "+ pycolor.END)
-            write_puyo(next[0][i])
-            sys.stdout.write(pycolor.CYAN +"|\n"+ pycolor.END)
+            write_puyo(next[0][0][i])
+            sys.stdout.write(pycolor.CYAN +"|     | ")
+            #2p
+            write_puyo(next[1][0][i])
+            sys.stdout.write(pycolor.CYAN +"|   | ")
+            for j in range(6):
+                write_puyo(field[1][i][j])
+            sys.stdout.write(pycolor.CYAN +"| ")
+            sys.stdout.write("\n"+ pycolor.END)
         elif i is 2:
             sys.stdout.write(pycolor.CYAN + "|    \ "+ pycolor.END)
-            write_puyo(next[1][0])
-            sys.stdout.write(pycolor.CYAN +"\ \n"+ pycolor.END)
+            write_puyo(next[0][1][0])
+            sys.stdout.write(pycolor.CYAN +"\   / ")
+            #2p
+            write_puyo(next[1][1][0])
+            sys.stdout.write(pycolor.CYAN + "/    | ")
+            for j in range(6):
+                write_puyo(field[1][i][j])
+            sys.stdout.write("|\n"+ pycolor.END)
         elif i is 3:
             sys.stdout.write(pycolor.CYAN + "|    | "+ pycolor.END)
-            write_puyo(next[1][1])
+            write_puyo(next[0][1][1])
+            sys.stdout.write(pycolor.CYAN +"|   | ")
+            #2p
+            write_puyo(next[1][1][1])
+            sys.stdout.write(pycolor.CYAN +"|    | "+ pycolor.END)
+            for j in range(6):
+                write_puyo(field[1][i][j])
             sys.stdout.write(pycolor.CYAN +"|\n"+ pycolor.END)
         elif i is 4:
-            sys.stdout.write(pycolor.CYAN + "|    -----\n"+ pycolor.END)
+            sys.stdout.write(pycolor.CYAN + "|    -----   -----    | "+ pycolor.END)
+            for j in range(6):
+                write_puyo(field[1][i][j])
+            sys.stdout.write(pycolor.CYAN +"|\n"+ pycolor.END)
         else:
+            sys.stdout.write(pycolor.CYAN +"|                     | "+ pycolor.END)
+            for j in range(6):
+                write_puyo(field[1][i][j])
             sys.stdout.write(pycolor.CYAN + "|\n" + pycolor.END)
-    sys.stdout.write(pycolor.CYAN + "---------------\n" + pycolor.END)
+    sys.stdout.write(pycolor.CYAN + "---------------                     ---------------\n" + pycolor.END)
 
 
 test = [
@@ -87,4 +113,4 @@ test = [
 			[4,4,4,3,1,1]
     ]
 if __name__ == "__main__":
-    view_field(test,[[1,1],[1,2]])
+    view_field([test,test],[[[1,1],[1,2]],[[2,2],[3,2]]])
