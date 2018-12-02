@@ -15,6 +15,7 @@ from createRecord.extractColor import extractColor
 
 #遊び
 import time
+from view_field import view_field
 
 plt.gray()
 
@@ -32,16 +33,19 @@ img = cv2.imread('./test/sample.jpg')
 # plt.imshow(img)
 # plt.show()
 #ゲームの枠で切り抜く
-game_frame = vsAreaDetect(img)
-if not SCREEN_ONLY:
-    img = img[game_frame["minY"]:game_frame["maxY"],game_frame["minX"]:game_frame["maxX"]]
+# game_frame = vsAreaDetect(img)
+# if not SCREEN_ONLY:
+    # img = img[game_frame["minY"]:game_frame["maxY"],game_frame["minX"]:game_frame["maxX"]]
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
 # 枠見つける
-area = borderDetect(img)
-with open('./test/area.json','w') as f:
-    json.dump(area,f,ensure_ascii=False)
-# 枠線つける
+# area = borderDetect(img)
+# with open('./test/area.json','w') as f:
+#     json.dump(area,f,ensure_ascii=False)
+
+with open('./test/area.json') as f:
+    area = json.load(f)
+# # 枠線つける
 # #field
 # v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
 # v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
@@ -73,12 +77,16 @@ with open('./test/area.json','w') as f:
 # plt.imshow(v_img)
 # plt.show()
 
-# p = field2array(img,area)
+# with open('./test/area.json') as f:
+#     area = json.load(f)
+p,p2 = field2array(img,area)
 # for i in range(12):
 #     for j in range(6):
-#         if p["field"]["1p"][i][j]["RED"] > 5:
-#             print(i,j,p["field"]["1p"][i][j]["RED"])
-
+#         if p2["field"]["1p"][i][j]:
+#             print(i,j,p2["field"]["1p"][i][j])
+# view_field()
+# print(p2["next"])
+view_field(p2)
 # for i in range(10):
 #     time.sleep(0.1)
 #     print("\007")
