@@ -35,84 +35,88 @@ def write_puyo(puyo):
     elif puyo is "PURPLE":
         sys.stdout.write(pycolor.PURPLE + "● " + pycolor.END)
 
-def view_field(field,next):
+def view_field(area):
     """フィールドを出力する
     
     Parameters
     ----------
-    field : [2][13][6]
-        ぷよぷよのフィールド
-        [2]はプレイヤー
-    next : [2][2][2]
-        player - next&wnext - tumo
-    
+    area : dict
+        {
+            "field":{
+                "1p":[y][x]にkeyとなるcolorのstr,
+                "2p"
+            },
+            "next":{},
+            "wnext":{}
+        }
+
     """
 
 
     sys.stdout.write(pycolor.CYAN + "---------------   -----     -----   ---------------\n" + pycolor.END)
-    for i in range(13):
+    for i in range(12):
         sys.stdout.write(pycolor.CYAN +"| " + pycolor.END)
         for j in range(6):
-            write_puyo(field[0][i][j])
+            write_puyo(area["field"]["1p"][i][j])
 
         if i is 0 or i is 1:
             sys.stdout.write(pycolor.CYAN + "|   | "+ pycolor.END)
-            write_puyo(next[0][0][i])
+            write_puyo(area["next"]["1p"][0][i])
             sys.stdout.write(pycolor.CYAN +"|     | ")
             #2p
-            write_puyo(next[1][0][i])
+            write_puyo(area["next"]["2p"][0][i])
             sys.stdout.write(pycolor.CYAN +"|   | ")
             for j in range(6):
-                write_puyo(field[1][i][j])
+                write_puyo(area["field"]["2p"][i][j])
             sys.stdout.write(pycolor.CYAN +"| ")
             sys.stdout.write("\n"+ pycolor.END)
         elif i is 2:
             sys.stdout.write(pycolor.CYAN + "|    \ "+ pycolor.END)
-            write_puyo(next[0][1][0])
+            write_puyo(area["next"]["1p"][1][0])
             sys.stdout.write(pycolor.CYAN +"\   / ")
             #2p
-            write_puyo(next[1][1][0])
+            write_puyo(area["next"]["2p"][1][0])
             sys.stdout.write(pycolor.CYAN + "/    | ")
             for j in range(6):
-                write_puyo(field[1][i][j])
+                write_puyo(area["field"]["2p"][i][j])
             sys.stdout.write("|\n"+ pycolor.END)
         elif i is 3:
             sys.stdout.write(pycolor.CYAN + "|    | "+ pycolor.END)
-            write_puyo(next[0][1][1])
+            write_puyo(area["next"]["1p"][1][1])
             sys.stdout.write(pycolor.CYAN +"|   | ")
             #2p
-            write_puyo(next[1][1][1])
+            write_puyo(area["next"]["2p"][1][1])
             sys.stdout.write(pycolor.CYAN +"|    | "+ pycolor.END)
             for j in range(6):
-                write_puyo(field[1][i][j])
+                write_puyo(area["field"]["2p"][i][j])
             sys.stdout.write(pycolor.CYAN +"|\n"+ pycolor.END)
         elif i is 4:
             sys.stdout.write(pycolor.CYAN + "|    -----   -----    | "+ pycolor.END)
             for j in range(6):
-                write_puyo(field[1][i][j])
+                write_puyo(area["field"]["2p"][i][j])
             sys.stdout.write(pycolor.CYAN +"|\n"+ pycolor.END)
         else:
             sys.stdout.write(pycolor.CYAN +"|                     | "+ pycolor.END)
             for j in range(6):
-                write_puyo(field[1][i][j])
+                write_puyo(area["field"]["2p"][i][j])
             sys.stdout.write(pycolor.CYAN + "|\n" + pycolor.END)
     sys.stdout.write(pycolor.CYAN + "---------------                     ---------------\n" + pycolor.END)
 
 
-test = [
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","NULL","NULL","NULL","NULL","NULL"],
-    ["NULL","YELLOW","NULL","GREEN","RED","BLUE"],
-    ["GREEN","GREEN","GREEN","RED","BLUE","BLUE"],
-    ["YELLOW","YELLOW","YELLOW","GREEN","RED","RED"]
-]
-if __name__ == "__main__":
-    view_field([test,test],[[["RED","RED"],["YELLOW","GREEN"]],[["GREEN","GREEN"],["BLUE","GREEN"]]])
+# test = [
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","NULL","NULL","NULL","NULL","NULL"],
+#     ["NULL","YELLOW","NULL","GREEN","RED","BLUE"],
+#     ["GREEN","GREEN","GREEN","RED","BLUE","BLUE"],
+#     ["YELLOW","YELLOW","YELLOW","GREEN","RED","RED"]
+# ]
+# if __name__ == "__main__":
+#     view_field([test,test],[[["RED","RED"],["YELLOW","GREEN"]],[["GREEN","GREEN"],["BLUE","GREEN"]]])
