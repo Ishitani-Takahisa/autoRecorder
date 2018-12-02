@@ -53,6 +53,48 @@ def field2array(img,area):
     #test
     rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+    def activateField(puyo):
+        """1マス分のフィールドを受け取って一番確率の高い色を返す
+        
+        Parameters
+        ----------
+        puyo : dict
+            何%で色が存在するか示す配列
+            {
+                "RED":0,
+                "GREEN":0,
+                "BLUE":81,
+                "YELLOW":0,
+                "PURPLE":2,
+                "OJAMA":1
+            }
+        
+        Returns
+        -------
+        str
+            keyとなる色を示す文字列
+        """
+
+        threshold = {
+                "RED":1,
+                "GREEN":50,
+                "BLUE":50,
+                "YELLOW":40,
+                "PURPLE":50,
+                "OJAMA":80,
+                "NULL":0.5
+            }
+        c_max = 0
+        color =""
+        for key in puyo:
+            if c_max < puyo[key]/threshold[key]:
+                c_max = puyo[key]/threshold[key]
+                color = key
+        if c_max < threshold["NULL"]:
+            return "NULL"
+        # print("max : ",c_max,color)
+        return color
+
     def isPuyoColor(area):
         """ある範囲に存在するぷよの色を特定する
         
@@ -78,6 +120,8 @@ def field2array(img,area):
                 "PURPLE":2,
                 "OJAMA":1
             }
+        array : [13][6]
+            keyとなる色を示す文字列が入っている
         """
 
         p = {
@@ -108,10 +152,6 @@ def field2array(img,area):
         "next":{
             "x":1,
             "y":2
-        },
-        "wnext":{
-            "x":1,
-            "y":2
         }
     }
 
@@ -121,32 +161,85 @@ def field2array(img,area):
             "2p":[[{} for i in range(6)] for j in range(12)]
         },
         "next":{
-            "1p":[[{}] for j in range(2)],
-            "2p":[[{}] for j in range(2)]
+            "1p":[[{} for i in range(2)] for j in range(2)],
+            "2p":[[{} for i in range(2)] for j in range(2)]
+        }
+    }
+
+    p2 = {
+        "field":{
+            "1p":[["" for i in range(6)] for j in range(12)],
+            "2p":[["" for i in range(6)] for j in range(12)]
         },
-        "wnext":{
-            "1p":[[{}] for j in range(2)],
-            "2p":[[{}] for j in range(2)]
+        "next":{
+            "1p":[["" for i in range(2)] for j in range(2)],
+            "2p":[["" for i in range(2)] for j in range(2)]
         }
     }
 
     for key in area:
+        if (key == "points") or (key == "wnext"):
+            continue
+        # print("key is : ",key)
         width = int(area[key]["width"]/sep[key]["x"])
         height = int(area[key]["height"]/sep[key]["y"])
-        print(height,"高さ",width,"横幅")
+        # print(height,"高さ",width,"横幅")
 
-        for i in range(0,sep[key]["y"]):
-            for j in range(0,sep[key]["x"]):
-                p[key]["1p"][i][j] = isPuyoColor({
-                    "top":area[key]["top"]+i*height,
-                    "left":area[key]["1p"]+j*width,
-                    "width":width,
-                    "height":height
-                })
-                p[key]["2p"][i][j] = isPuyoColor({
-                    "top":area[key]["top"]+i*height,
-                    "left":area[key]["2p"]+j*width,
-                    "width":width,
-                    "height":height
-                })
-    return p
+        if key == "field":
+            for i in range(0,sep[key]["y"]):
+                for j in range(0,sep[key]["x"]):
+                    for player in p[key]:
+                        p[key][player][i][j] = isPuyoColor({
+                            "top":area[key]["top"]+i*height,
+                            "left":area[key][player]+j*width,
+                            "width":width,
+                            "height":height
+                        })
+                        p2[key][player][i][j] = activateField(p[key][player][i][j])
+                    # p[key]["1p"][i][j] = isPuyoColor({
+                    #     "top":area[key]["top"]+i*height,
+                    #     "left":area[key]["1p"]+j*width,
+                    #     "width":width,
+                    #     "height":height
+                    # })
+                    # p[key]["2p"][i][j] = isPuyoColor({
+                    #     "top":area[key]["top"]+i*height,
+                    #     "left":area[key]["2p"]+j*width,
+                    #     "width":width,
+                    #     "height":height
+                    # })
+        elif key == "next":
+            for i in range(0,2):
+                for player in p[key]:
+                    p[key][player][0][i] = isPuyoColor({
+                        "top":area[key]["top"]+i*height,
+                        "left":area[key][player],
+                        "width":width,
+                        "height":height
+                    })
+                    #wnextも処理
+                    p[key][player][1][i] = isPuyoColor({
+                        "top":area["wnext"]["top"]+i*height,
+                        "left":area["wnext"][player],
+                        "width":width,
+                        "height":height
+                    })
+                    p2[key][player][0][i] = activateField(p[key][player][0][i])
+                    p2[key][player][1][i] = activateField(p[key][player][1][i])
+
+        # print(p)
+        # for key in p:
+        #     for player in p[key]:
+        #         for i in 6:
+        #             for j in 12:
+        #                 p2[key][player][i][j] = activateField(p[key][player][i][j])
+
+
+        # for i in range(0,sep[key]["y"]):
+        #     for j in range(0,sep[key]["x"]):
+        #         p2[key]["1p"][i][j] = activateField(p[key]["1p"][i][j])
+        #         p2[key]["2p"][i][j] = activateField(p[key]["2p"][i][j])
+
+    return p,p2
+
+    
