@@ -30,7 +30,7 @@ def detectOneGame(setting,area,start):
     if f_count - start < fps+1:
         return 0
     for i in range(10,fps+1,10):
-        print("終了条件を確認しています",i,"/",fps)
+        print(i)
         check = img2points(cv2.imread('./tmp/'+str(start+i)+'.png'),area)
         if check[0] != -1 and check[0] != -1:
             break
@@ -69,15 +69,28 @@ def detectOneGame(setting,area,start):
 
         #試合が終了していたらそこで終わる
         if p[0] == -1 and p[1] == -1:
-            for j in range(abs(interval)):
-                p = img2points(cv2.imread('./tmp/'+str(i-j)+'.png'),area)
-                if p[0] != -1 and p[1] != -1:
-                    return i-j
+            print(i)
+            if i+fps < f_count:
+                step = 10
+                for j in range(i,i+fps,step):
+                    p = img2points(cv2.imread('./tmp/'+str(j)+'.png'),area)
+                    if p[0] != -1 and p[1] != -1:
+                        print(j)
+                        for k in range(step):
+                            p = img2points(cv2.imread('./tmp/'+str(j-k)+'.png'),area)
+                            if p[0] == -1 and p[1] == -1:
+                                return j-k+1+int(0.3*fps)
+                return i
+
+            # for j in range(abs(interval)):
+            #     p = img2points(cv2.imread('./tmp/'+str(i-j)+'.png'),area)
+            #     if p[0] != -1 and p[1] != -1:
+            #         return i-j
         #連鎖中だったら0.3秒進める
         if p[0] < 0:
             return detect(i+round(0.3*fps),interval,point)
         
-        if p[0] == 0 and abs(interval) == 1:
+        if p[0] == 0 and p[1] == 0 and abs(interval) == 1:
             return i
         elif point <= p[0]:
             #減ってから増やす場合は，増量を半減する
@@ -93,10 +106,10 @@ def detectOneGame(setting,area,start):
     return detect(start,30*fps,0)
     
 
-# with open("./vs_setting/ぷよぷよクロニクル 第2回おいうリーグ S級リーグ ようかん vs まはーら 50先.json") as f:
-#     setting = json.load(f)
+with open("./vs_setting/ぷよぷよクロニクル 第2回おいうリーグ S級リーグ ようかん vs まはーら 50先.json") as f:
+    setting = json.load(f)
 
-# with open('./test/area.json') as f:
-#     area = json.load(f)
-#     print(detectOneGame(setting,area,162960))
+with open('./area.json') as f:
+    area = json.load(f)
+    print(detectOneGame(setting,area,9582))
 
