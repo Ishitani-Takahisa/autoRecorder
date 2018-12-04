@@ -15,21 +15,19 @@ from createRecord.extractColor import extractColor
 
 #遊び
 import time
-from view_field import view_field
+from view_field import viewAll
+from createRecord.img2points import img2points
+# from createRecord.findNextChange import findNextChange
 
 plt.gray()
 
 #動画に対して本来は外部のjsonなどで自身で設定して読み込む項目
 SCREEN_ONLY = True
 
-def nextPuyoDetect(img,bR,bB):
-    #枠の間にネクストぷよがあるはずなので
-    #1p red
-    if bR["minX"] < bB["minX"]:
-        min
 
+# img = cv2.imread('./test/sample.jpg')
+img = cv2.imread("./tmp/9733.png")
 
-img = cv2.imread('./test/sample.jpg')
 # plt.imshow(img)
 # plt.show()
 #ゲームの枠で切り抜く
@@ -38,26 +36,29 @@ img = cv2.imread('./test/sample.jpg')
     # img = img[game_frame["minY"]:game_frame["maxY"],game_frame["minX"]:game_frame["maxX"]]
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-# 枠見つける
+# # 枠見つける
 # area = borderDetect(img)
 # with open('./test/area.json','w') as f:
 #     json.dump(area,f,ensure_ascii=False)
 
-with open('./test/area.json') as f:
-    area = json.load(f)
-# # 枠線つける
-# #field
-# v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
-# v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
-# #next
-# v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
-# v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
-# #wnext
-# v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
-# v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
-# #points
-# v_img = cv2.rectangle(rgb_img,(area["points"]["1p"],area["points"]["top"]),(area["points"]["1p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(255,0,0),5)
-# v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area["points"]["2p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(0,0,255),5)
+with open('./current.json') as f:
+    area = json.load(f)["area"]
+
+# print(findNextChange(7115,8671,area["next"]))
+
+# 枠線つける
+#field
+v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
+v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
+#next
+v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
+v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
+#wnext
+v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
+v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
+#points
+v_img = cv2.rectangle(rgb_img,(area["points"]["1p"],area["points"]["top"]),(area["points"]["1p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(255,0,0),5)
+v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area["points"]["2p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(0,0,255),5)
 
 # C_IMG = {
 #     "RED":extractColor(img,np.array([178,130,128]),np.array([180,255,255])),
@@ -74,19 +75,19 @@ with open('./test/area.json') as f:
 
 # cv2.imwrite("border2.png",v_img)
 
-# plt.imshow(v_img)
-# plt.show()
+plt.imshow(v_img)
+plt.show()
 
-# with open('./test/area.json') as f:
-#     area = json.load(f)
-p,p2 = field2array(img,area)
+_,field = field2array(img,area)
+points = img2points(img,area)
+viewAll(field,points)
 # for i in range(12):
 #     for j in range(6):
 #         if p2["field"]["1p"][i][j]:
 #             print(i,j,p2["field"]["1p"][i][j])
 # view_field()
-# print(p2["next"])
-view_field(p2)
+
+# viewField(p2)
 # for i in range(10):
 #     time.sleep(0.1)
 #     print("\007")

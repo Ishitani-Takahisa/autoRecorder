@@ -30,4 +30,4 @@ with open("./vs_setting/"+getFileName(files[n])+".json") as f:
 # TODO : 進捗を表示する https://qiita.com/exy81/items/99e99ab8c184343948cc 参考
 for i in range(count):
     _, frame = cap.read()
-    cv2.imwrite('./tmp2/'+str(i)+'.png',frame)
+    cv2.imwrite('./tmp/'+str(i)+'.png',frame)

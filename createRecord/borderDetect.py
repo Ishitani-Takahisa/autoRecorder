@@ -19,6 +19,8 @@ def width2field(top,left,right,player):
             pf["right"]-=1
 
     width = pf["right"] - pf["left"]
+    if width%50 != 0:
+        width -= width%50
     h = round(width*1.8)
     height = h if h%12==0 else h+(12-h%12) if h%12>5 else h-h%12
     player_1_left = pf["left"] if player == 1 else pf["left"]-2*width
@@ -46,9 +48,9 @@ def width2field(top,left,right,player):
         "2p": _next["2p"]-round(0.1*field["width"])
     }
     _points = {
-        "top": field["top"]+field["height"]+round(field["width"]/60),
+        "top": field["top"]+field["height"]+round(field["width"]/120),
         "width": field["width"],
-        "height": round(field["width"]/6),
+        "height": round(field["width"]/5),
         "1p": field["1p"],
         "2p": field["2p"]
     }
@@ -90,9 +92,9 @@ def cr_borderDetectLU(img,lC,uC):
             elif meanY < y and maxY > y:
                 maxY = y
         
-        print("max = ",maxY)
-        print("min = ",minY)
-        print(shape[0])
+        # print("max = ",maxY)
+        # print("min = ",minY)
+        # print(shape[0])
         if maxY - minY < shape[0]*0.4:
             return getY( listX,n+0.1)
         return {
@@ -115,7 +117,7 @@ def cr_borderDetectLU(img,lC,uC):
         maxX = shape[1]
         length = len(listY)
         meanX = myMean(lineX)
-        print("平均",meanX)
+        # print("平均",meanX)
         for x in lineX:
             if meanX > x and minX < x:
                 minX = x
@@ -123,9 +125,9 @@ def cr_borderDetectLU(img,lC,uC):
                 maxX = x
 
         
-        print("maxX = ",maxX)
-        print("minX = ",minX)
-        print(shape[0])
+        # print("maxX = ",maxX)
+        # print("minX = ",minX)
+        # print(shape[0])
 
         return {
             "min" : minX,

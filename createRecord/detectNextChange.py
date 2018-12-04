@@ -75,11 +75,15 @@ def detectNextChange(start,end,area):
                             "２重チェック"
                             if i != end:
                                 diff2 = find_diff(df[i-1][p][j],df[i+1][p][j])
+                                count_diff2 = 0
                                 for x in diff2:
-                                    count_diff+=x["diff"]
-                                if count_diff < 5:
+                                    count_diff2+=x["diff"]
+                                if count_diff2 < 30:
                                     continue
-                            players[p].append(start+i)
+                            #     print(i,count_diff," diff2 ",diff2)
+                            # print(i," diff ",diff)
+                            if cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() > 150:
+                                players[p].append(start+i)
     
     return players
 

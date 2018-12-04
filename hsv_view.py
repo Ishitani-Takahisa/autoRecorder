@@ -3,15 +3,16 @@ import cv2
 from matplotlib import pyplot as plt
 
 plt.gray()
-img = cv2.imread("./test/sample.jpg")
+# img = cv2.imread("./test/sample.jpg")
+img = cv2.imread("./tmp/10197.png")
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 # 2hsv
 hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 l = [0 for i in range(3)]
 u = [255 for i in range(3)]
-lower = np.array([100,50,50])
-upper = np.array([120,255,255])
+lower = np.array([0,0,0])
+upper = np.array([250,50,230])
 text = ["H","S","V"]
 
 # TODO : BLUEの修正
@@ -44,6 +45,8 @@ while True:
         blue = input('>>>  ')
         print(cv2.cvtColor(np.uint8([[[blue,green,red]]]),cv2.COLOR_BGR2HSV))
         continue
+    elif command == "v":
+        pass
     else:
         print("誤った入力です")
         continue

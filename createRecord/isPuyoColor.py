@@ -29,11 +29,11 @@ def activateField(puyo):
 
     threshold = {
             "RED":20,
-            "GREEN":50,
+            "GREEN":30,
             "BLUE":20,
-            "YELLOW":20,
+            "YELLOW":15,
             "PURPLE":30,
-            "OJAMA":20,
+            "OJAMA":25,
             "NULL":0.5
         }
     c_max = 0
@@ -145,7 +145,7 @@ def field2array(img,area):
         "BLUE":extractColor(img,np.array([100,150,180]),np.array([120,255,255])),
         "YELLOW":extractColor(img,np.array([20,50,230]),np.array([30,255,255])),
         "PURPLE":extractColor(img,np.array([130,50,180]),np.array([140,255,255])),
-        "OJAMA":extractColor(img,np.array([0,0,0]),np.array([250,10,230]))
+        "OJAMA":extractColor(img,np.array([0,0,0]),np.array([250,60,230]))
     }
 
     #分割数を設定
