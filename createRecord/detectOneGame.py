@@ -1,9 +1,27 @@
 # -*- coding: utf-8 -*-
 import cv2
 import json
+import math
 
 #自作
 from createRecord.img2points import img2points
+
+def first_bright(start,end,interval):
+    def detect(i,interval):
+        # print(i,cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean())
+        if end < i:
+            return detect(math.ceil((end+i)/2),end-i)
+        elif end == i:
+            return i
+        if cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() < 150:
+             return detect(i+interval,interval)
+        elif interval == 1:
+            return i
+        else:
+            return detect(i-round(interval*3/2),round(interval/2))
+    
+    return detect(start,interval)
+        
 
 def detectOneGame(setting,area,start):
     """試合の終わり（次の試合の始まりを探す）
@@ -26,17 +44,7 @@ def detectOneGame(setting,area,start):
 
     fps = setting["fps"]
     f_count = setting["f_count"]
-    #最後の試合か確認する
-    if f_count - start < fps+1:
-        return 0
-    for i in range(10,fps+1,10):
-        print(i)
-        check = img2points(cv2.imread('./tmp/'+str(start+i)+'.png'),area)
-        if check[0] != -1 and check[0] != -1:
-            break
-        elif i == fps:
-            return 0
-    
+    s = first_bright(start,f_count,int(fps/15))    
     def detect(i,interval,point):
         """実際に見つける再帰関数
         
@@ -59,7 +67,9 @@ def detectOneGame(setting,area,start):
 
         #ファイルが存在する範囲でのみ調べる
         if f_count < i:
-            return detect(i-round(interval/2),round(interval/2),point)
+            # return detect(i-round(interval/2),round(interval/2),point)
+            return detect(math.ceil((f_count+i)/2),f_count-i,point)
+
 
         p = img2points(cv2.imread('./tmp/'+str(i)+'.png'),area)
 
@@ -69,23 +79,11 @@ def detectOneGame(setting,area,start):
 
         #試合が終了していたらそこで終わる
         if p[0] == -1 and p[1] == -1:
-            print(i)
-            if i+fps < f_count:
-                step = 10
-                for j in range(i,i+fps,step):
-                    p = img2points(cv2.imread('./tmp/'+str(j)+'.png'),area)
-                    if p[0] != -1 and p[1] != -1:
-                        print(j)
-                        for k in range(step):
-                            p = img2points(cv2.imread('./tmp/'+str(j-k)+'.png'),area)
-                            if p[0] == -1 and p[1] == -1:
-                                return j-k+1+int(0.3*fps)
-                return i
+            return first_bright(i,f_count,int(fps/15))
+            # p = img2points(cv2.imread('./tmp/'+str(end)+'.png'),area)
+            # if p[0] == 0 or p[1] == 0:
+            #     return end
 
-            # for j in range(abs(interval)):
-            #     p = img2points(cv2.imread('./tmp/'+str(i-j)+'.png'),area)
-            #     if p[0] != -1 and p[1] != -1:
-            #         return i-j
         #連鎖中だったら0.3秒進める
         if p[0] < 0:
             return detect(i+round(0.3*fps),interval,point)
@@ -103,7 +101,7 @@ def detectOneGame(setting,area,start):
             interval = -1*round(interval/2) if interval > 0 else round(interval/2)
             return detect(i+interval,interval,point)
     
-    return detect(start,30*fps,0)
+    return detect(s,30*fps,0)
     
 
 with open("./vs_setting/ぷよぷよクロニクル 第2回おいうリーグ S級リーグ ようかん vs まはーら 50先.json") as f:
@@ -111,5 +109,5 @@ with open("./vs_setting/ぷよぷよクロニクル 第2回おいうリーグ S�
 
 with open('./area.json') as f:
     area = json.load(f)
-    print(detectOneGame(setting,area,9582))
+    print(detectOneGame(setting,area,145343))
 
