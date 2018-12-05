@@ -4,15 +4,15 @@ from matplotlib import pyplot as plt
 
 plt.gray()
 # img = cv2.imread("./test/sample.jpg")
-img = cv2.imread("./tmp/10197.png")
+img = cv2.imread("./tmp/10196.png")
 rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 # 2hsv
 hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
 l = [0 for i in range(3)]
 u = [255 for i in range(3)]
-lower = np.array([0,0,0])
-upper = np.array([250,50,230])
+lower = np.array([0,0,210])
+upper = np.array([250,60,255])
 text = ["H","S","V"]
 
 # TODO : BLUEの修正

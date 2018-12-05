@@ -29,21 +29,21 @@ with open("./vs_setting/"+current["title"]+".json") as f:
 with open("./area.json") as f:
     area = json.load(f)
 
-s = detectStartingTime(setting["fps"])
-print("start : ",s)
-e = detectOneGame(setting,area,s)
-print("end : ",e)
-c = detectNextChange(s,e,area["next"])
-print(s,e,c)
+# s = detectStartingTime(setting["fps"])
+# print("start : ",s)
+# e = detectOneGame(setting,area,s)
+# print("end : ",e)
+# c = detectNextChange(s,e,area["next"])
+# print(s,e,c)
 
 # img = cv2.imread("./tmp/10608.png")
 # test = [9657, 9680, 9707, 9733, 9758, 9784, 9809, 9833, 9861, 9884, 9907, 9934, 9958, 9979, 10000, 10037, 10078, 10090, 10113, 10156, 10196, 10221, 10249, 10348, 10373, 10594, 10608]
 
-# img = cv2.imread('./tmp/9733.png')
+img = cv2.imread('./tmp/10196.png')
 
-# _,field = field2array(img,area)
-# points = img2points(img,area)
-# print(points)
-# viewAll(field,points)
+_,field = field2array(img,area)
+points = img2points(img,area)
+print(points)
+viewAll(field,points)
 
 

@@ -25,6 +25,7 @@ with open("./current.json") as f:
 
 with open("./vs_setting/"+current["title"]+".json") as f:
     setting = json.load(f)
+    print(setting)
 
 def save(current):
     with open("./current.json","w") as f:
@@ -37,7 +38,7 @@ def main():
         game_list = []
         #ゲーム開始時間を見つける
         f = detectStartingTime(setting["fps"])
-        e = detectEndTime(setting["fps"],setting["f_count"])
+        e = detectEndTime(setting["fps"],setting["f_count"]-1)
         print("ゲーム開始時間を見つけました．フレーム : ",f)
         print("ゲーム終了時間を見つけました．フレーム : ",e)
 
@@ -45,33 +46,41 @@ def main():
         if "area" not in current:
             current["area"] = borderDetect(cv2.imread('./tmp/'+str(f)+'.png'))
             area = current["area"]
-            # rgb_img = cv2.imread('./tmp/'+str(f)+'.png')
-            # # 枠線つける
-            # #field
-            # v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
-            # v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
-            # #next
-            # v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
-            # v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
-            # #wnext
-            # v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
-            # v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
-            # #points
-            # v_img = cv2.rectangle(rgb_img,(area["points"]["1p"],area["points"]["top"]),(area["points"]["1p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(255,0,0),5)
-            # v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area["points"]["2p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(0,0,255),5)
-            # plt.imshow(v_img)
-            # plt.show()
             save(current)
-        while f < e:
+        while f < e - 10*setting["fps"]:
             print(f,len(game_list))
             f = detectOneGame(setting,current["area"],f)
             game_list.append(f)
         current["game_list"] = game_list
         save(current)
-    # if "tumo_timing" not in current or ("tumo_timing" in current and len(current["tumo_timig"]) == current["game_list"]):
-    #     start = 0 if "tumo_timing" not in current else len(current[])
+    if "tumo_timing" not in current:
+        current["tumo_timing"] = []
+        # print("asasasahluisa",current["tumo_timing"],len(current["tumo_timing"]),len(current["game_list"]))
+    if len(current["tumo_timing"]) != len(current["game_list"])-1:
+        for i in range(len(current["tumo_timing"]),len(current["game_list"])-1):
+            print("i",i,current["game_list"][i],current["game_list"][i+1])
+            current["tumo_timing"].append(detectNextChange(current["game_list"][i],current["game_list"][i+1],current["area"]["next"]))
+            save(current)
+    if "tumo_timing_point" not in current:
+        current["tumo_timing_point"] = []
+        # current["tumo_color"] = []
+    if len(current["tumo_timing"]) != len(current["tumo_timing_point"]):
+        for i in range(len(current["tumo_timing_point"]),len(current["tumo_timing"])):
+            current["tumo_timing_point"].append({
+                "1p": [],
+                "2p": []
+            })
+            # current["tumo_color"].append([])
+            #多くツモる方のネクストを参照してネクストの記録を作る
+            # larger_player = "1p" if len(current["tumo_timing"]["1p"]) > len(current["tumo_timing"]["2p"]) else "2p"
+            for player in current["tumo_timing"][i]:
+                for frame in current["tumo_timing"][i][player]:
+                    current["tumo_timing_point"][i][player].append(img2points(cv2.imread('./tmp/'+str(frame)+'.png'),current["area"]))
+                    # if player == larger_player:
+                    #     current["tumo_color"][i].
+            save(current)
 
-# print(setting)
+
 main()
 
     
