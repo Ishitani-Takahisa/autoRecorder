@@ -9,10 +9,16 @@ def detectNextChange(start,end,area):
     df : array
         {
             start : int(開始フレーム数)
-            next_list : [{
-                1p : next == [2][2],
-                2p :
-            }]
+            end : int(終了フレーム)
+            area : dict
+                nextの入ったdict
+                {
+                    "top":基準となる座標 i,
+                    "1p":基準となる座標 j,
+                    "2p":基準となる座標 j,
+                    "height:範囲の高さ,
+                    "width":範囲の幅
+                }
         }
     
     Returns
@@ -87,8 +93,4 @@ def detectNextChange(start,end,area):
                             players[p].append(start+i)
     
     return players
-
-
-
-# print(findNextChange(7115,8671,area["next"]))
     
