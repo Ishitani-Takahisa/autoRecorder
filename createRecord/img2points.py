@@ -11,7 +11,7 @@ def patternMatch(img,template):
     ----------
     img : cv2.imread
         探す元の画像
-    template : cv2.imread
+    template : cv2.imread(".png",0)
         検索する画像
     
     Returns
@@ -22,7 +22,7 @@ def patternMatch(img,template):
     """
 
     w, h = template.shape[::-1]
-    threshold = 0.95
+    threshold = 0.9
 
     res = cv2.matchTemplate(img,template,cv2.TM_CCOEFF_NORMED)
     loc = np.where(res >= threshold)
@@ -63,13 +63,6 @@ def img2points(img,area):
             if __name__ == "__main__":
                 print(p,'が',len(points_array[p]),"桁しか取れてない",points_array[p])
             points[p] = -9
-
     return points
-
-# img = cv2.imread('./tmp/10504.png')
-# with open('./test/area.json') as f:
-#     area = json.load(f)
-
-# print(img2points(img))
 # plt.imshow(img)
 # plt.show()

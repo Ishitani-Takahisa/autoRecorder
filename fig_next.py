@@ -1,12 +1,11 @@
-import cv2
-from createRecord.isPuyoColor import next2array
-from detectFirstChain import detectFirstChain
 import json
-with open("./current.json") as f:
-    current = json.load(f)
-    c_area = current["area"]
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+import sys
+from createRecord.isPuyoColor import next2array
 
-def detectNextChange(start,end,area=current["area"]["next"]):
+def detectNextChange(start,end,area):
     """開始と終了のフレーム数を与えて，ネクストが切り替わったフレームを返す
     
     Parameters
@@ -61,10 +60,18 @@ def detectNextChange(start,end,area=current["area"]["next"]):
                 })
         return df
     
+    x = []
+    y = []
+    y2 = []
+    y3 = []
+
     df = []
     for i in range(start,end):
         p,_ = next2array(cv2.imread('./tmp/'+str(i)+'.png'),area)
         df.append(p)
+        # start
+        x.append(i)
+        # end
 
     players = {
         "1p":[],
@@ -77,27 +84,87 @@ def detectNextChange(start,end,area=current["area"]["next"]):
                 if i != 0 and (len(players[p]) == 0 or players[p][-1]+7 <= start+i):
                     diff = find_diff(df[i][p][j],df[i-1][p][j])
                     if len(diff) == 0:
+                        # ここから
+                        # 記録は1pのみ
+                        if p == "1p":
+                            y.append(0)
+                            y2.append(0)
+                            y3.append(0)
+                        # ここまで                        
                         continue
                     else:
                         count_diff = 0
                         for x in diff:
                             count_diff+=x["diff"]
-                        print(cv2.imread("./tmp/"+str(i)+".png").shape,i)
-                        # if count_diff > 2 and cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() > 150 and detectFirstChain(i,i+1,c_area,p) is None:
-                        if count_diff > 2 and detectFirstChain(i,i+1,c_area,p) is None:
-                            # "２重チェック"
+                        # ここから
+                        # 記録は1pのみ
+                        if p == "1p":
+                            y.append(count_diff)
+                        # ここまで
+                        if count_diff > 2:
+                            "２重チェック"
                             if i < len(df)-1:
                                 # print(i,len(df))
                                 diff2 = find_diff(df[i-1][p][j],df[i+1][p][j])
                                 count_diff2 = 0
                                 for x in diff2:
                                     count_diff2+=x["diff"]
+                                # ここから
+                                # 記録は1pのみ
+                                if p == "1p":
+                                    y2.append(count_diff2)
+                                # ここまで
                                 if count_diff2 < 30:
+                                    if p == "1p":
+                                        y3.append(0)
                                     continue
+                                else:
+                                    if p == "1p":
+                                        y3.append(count_diff)
                             #     print(i,count_diff," diff2 ",diff2)
                             # print(i," diff ",diff)
                             # if cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() > 150:
                             players[p].append(start+i)
+                        else:
+                            # ここから
+                            # 記録は1pのみ
+                            if p == "1p":
+                                y2.append(0)
+                                y3.append(0)
+                            # ここまで
+                else:
+                    y.append(0)
+                    y2.append(0)
+                    y3.append(0)
+    
+
+    # figure
+    # subplot(2,2,1)        % add first plot in 2 x 2 grid
+    # plot(x,y1)            % line plot
+
+    # subplot(2,2,2)        % add second plot in 2 x 2 grid
+    # scatter(x,y2)         % scatter plot
+
+    # subplot(2,2,[3 4])    % add third plot to span positions 3 and 4
+    # yyaxis left           % plot against left y-axis 
+    # plot(x,y1)           
+    # yyaxis right          % plot against right y-axis
+    # plot(x,y2)
+    fig = plt.figure().add_subplot(1,1,1)
+    print(len(x),len(y))
+    fig.plot(x, y)
+    # fig.plot(x, y2)
+    # fig.plot(x, y3)
+    fig.set_xlabel('frame')
+    fig.set_ylabel('diff')
+    plt.xlim([12668,14349])
+    # plt.ylim([0,255])
+    plt.show()
+    # plt.savefig('figure.png')
     
     return players
     
+
+
+next = {"top": 93, "width": 50, "height": 90, "1p": 533, "2p": 703}
+print(detectNextChange(12668,14349,next))

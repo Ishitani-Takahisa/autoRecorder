@@ -29,10 +29,10 @@ def activateField(puyo):
 
     threshold = {
             "RED":20,
-            "GREEN":30,
+            "GREEN":20,
             "BLUE":20,
-            "YELLOW":15,
-            "PURPLE":30,
+            "YELLOW":10,
+            "PURPLE":40,
             "OJAMA":40,
             "NULL":0.5
         }
@@ -104,13 +104,13 @@ def isPuyoColor(area,nallow,C_IMG):
     return p
 
 
-def field2array(img,area):
+def field2array(img,area,kizami=3):
 
     """画像とフィールドの範囲を受け取って，各マスに何色のぷよがあるかを確率として返す．
 
     Parameters
     ----------
-    area : dict
+    area : dict(current["area"])
         {
             "field":{
                 "top":基準となる座標 i,
@@ -144,7 +144,7 @@ def field2array(img,area):
         "GREEN":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
         "BLUE":extractColor(img,np.array([100,150,180]),np.array([120,255,255])),
         "YELLOW":extractColor(img,np.array([20,50,230]),np.array([30,255,255])),
-        "PURPLE":extractColor(img,np.array([130,50,180]),np.array([140,255,255])),
+        "PURPLE":extractColor(img,np.array([130,50,180]),np.array([150,190,255])),
         "OJAMA":extractColor(img,np.array([0,0,210]),np.array([250,60,255]))
     }
 
@@ -204,7 +204,7 @@ def field2array(img,area):
                             "left":area[key][player]+j*width,
                             "width":width,
                             "height":height
-                        },3,C_IMG)
+                        },kizami,C_IMG)
                         p2[key][player][i][j] = activateField(p[key][player][i][j])
 
         elif key == "next":
@@ -260,7 +260,7 @@ def next2array(img,area):
         "GREEN":extractColor(img,np.array([50,100,100]),np.array([70,255,255])),
         "BLUE":extractColor(img,np.array([100,150,180]),np.array([120,255,255])),
         "YELLOW":extractColor(img,np.array([20,50,230]),np.array([30,255,255])),
-        "PURPLE":extractColor(img,np.array([130,50,180]),np.array([140,255,255])),
+        "PURPLE":extractColor(img,np.array([130,50,180]),np.array([150,190,255])),
         "OJAMA":extractColor(img,np.array([0,0,0]),np.array([250,10,230]))
     }
 
