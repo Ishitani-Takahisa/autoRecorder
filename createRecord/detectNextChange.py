@@ -82,9 +82,9 @@ def detectNextChange(start,end,area=current["area"]["next"]):
                         count_diff = 0
                         for x in diff:
                             count_diff+=x["diff"]
-                        print(cv2.imread("./tmp/"+str(i)+".png").shape,i)
-                        # if count_diff > 2 and cv2.cvtColor(cv2.imread("./tmp/"+str(i)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() > 150 and detectFirstChain(i,i+1,c_area,p) is None:
-                        if count_diff > 2 and detectFirstChain(i,i+1,c_area,p) is None:
+                        # print(cv2.imread("./tmp/"+str(i)+".png").shape,i)
+                        # if count_diff > 2 and cv2.cvtColor(cv2.imread("./tmp/"+str(i+start)+".png"), cv2.COLOR_BGR2HSV_FULL).T[2].flatten().mean() > 150 and detectFirstChain(i+start,i+start+1,c_area,p) is None:
+                        if count_diff > 2 and detectFirstChain(i+start,i+start+1,c_area["field"],p) is None:
                             # "２重チェック"
                             if i < len(df)-1:
                                 # print(i,len(df))

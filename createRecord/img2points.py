@@ -60,8 +60,9 @@ def img2points(img,area):
                 print("数字が一つも見当たりません")
             points[p] = -1
         else:
-            if __name__ == "__main__":
-                print(p,'が',len(points_array[p]),"桁しか取れてない",points_array[p])
+            # if __name__ == "__main__":
+            # print(p,'が',len(points_array[p]),"桁しか取れてない",points_array[p])
+            # print(points_array[p])
             points[p] = -9
     return points
 # plt.imshow(img)

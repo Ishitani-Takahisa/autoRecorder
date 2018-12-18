@@ -9,7 +9,7 @@ from detectNextColor import detectNextColor
 import json
 import math
 
-debugF = True
+debugF = False
 
 with open("./current.json") as f:
     current = json.load(f)
@@ -469,7 +469,8 @@ def detectOperate(field,next,player,point,frame,nextFrame):
     pn = 0 if player == "1p" else 1
     p = img2points(img,current["area"])[pn]
     print(p-point,"pt獲得")
-    # print(p,point)
+    if debugF:
+        print(p,point)
     is_chain = p - point >= 40
     # 連鎖が発生 == ポイント40以上獲得した場合は，最初に連鎖が発生したフレームでフィールドを確認する
     if is_chain:
@@ -511,9 +512,13 @@ def fieldUpDate(field,next,x,r,player,putFrame):
     return f
 
 def createRecord():
+    # {
+    #     '1p': [14365, 14440, 14464, 14491, 14517, 14542, 14570, 14597, 14623, 14647, 14687, 14714, 14747, 14771, 14795, 14819, 14842, 14872, 14894, 14917, 14939, 14960, 14983, 15014, 15034, 15053, 15072, 15092, 15125, 15153, 15191, 15209, 15227, 15244, 15262, 15277, 15654, 15725, 15753, 15776],
+    #     '2p': [14440, 14464, 14491, 14517, 14540, 14566, 14593, 14620, 14649, 14670, 14694, 14729, 14752, 14777, 14797, 14824, 14842, 14869, 14895, 14920, 14937, 14967, 14995, 15020, 15037, 15059, 15079, 15099, 15119, 15288, 15343, 15545, 15566, 15590, 15613, 15677, 15696, 15946]
+    # }
     f_list = {
         "1p" : [14440, 14464, 14491, 14517, 14542, 14572, 14597, 14623, 14647, 14687, 14714, 14747, 14771, 14795,14819, 14842, 14874, 14894, 14917, 14939, 14960, 14983, 15014, 15034, 15053, 15072, 15093, 15125, 15153, 15191, 15209, 15227, 15244, 15262, 15279, 15725, 15753, 15776],
-        "2p" : [14491, 14517, 14540, 14566, 14593, 14620, 14649, 14670, 14694, 14730, 14752, 14777, 14797, 14843, 14869, 14895, 14920, 14937, 14967, 14995, 15020, 15037, 15059, 15079, 15099, 15119, 15288, 15343, 15545, 15566, 15590, 15613, 15677, 15696, 15946, 15961]
+        "2p" : [14440, 14464, 14491, 14517, 14540, 14566, 14593, 14620, 14649, 14670, 14694, 14729, 14752, 14777, 14797, 14824, 14842, 14869, 14895, 14920, 14937, 14967, 14995, 15020, 15037, 15059, 15079, 15099, 15119, 15288, 15545, 15566, 15590, 15613, 15677, 15696]
     }
 
     if len(f_list["1p"]) > len(f_list["2p"]):
@@ -566,28 +571,6 @@ def createRecord():
 
 
 if __name__ == "__main__":
-    # f_list = [14440, 14464, 14491, 14517, 14542, 14572, 14597, 14623, 14647, 14687, 14714, 14747, 14771, 14795,14819, 14842, 14874, 14894, 14917, 14939, 14960, 14983, 15014, 15034, 15053, 15072, 15093, 15125, 15153, 15191, 15209, 15227, 15244, 15262, 15279, 15725, 15753, 15776]
-    # next_list = detectNextColor(f_list,"1p")
-    # field = [['NULL' for i in range(6)] for j in range(13)]
-    # point = 0
-    # remaining_point = 0
-    # for i in range(len(f_list)-1):
-    #     prev_point = point
-    #     candidate,point = detectOperate(field,next_list[i],"1p",point,f_list[i],f_list[i+1])
-    #     remaining_point += point - prev_point
-    #     print(candidate)
-    #     # fieldの更新
-    #     field = fieldUpDate(field,next_list[i],candidate["x"],candidate["r"],"1p",f_list[i])
-    #     # runChain(putPuyo(field,next_list[i],candidate["x"],candidate["r"]))
-    #     print(f_list[i+1],"フレーム ","次のツモは，",next_list[i+1])
-    #     view_s_field(field)
-    #     # 連鎖発生時
-    #     if point - prev_point >= 70:
-    #         print("連鎖発生！ ",math.floor(remaining_point/70),"個のおじゃまを送ります")
-    #         remaining_point = point%70
-    #     print("保有得点 : ",remaining_point)
-    #     if i == len(f_list)-2:
-    #         print("試合終了")
     createRecord()
 
     # print(isX(15279,"1p"))
