@@ -6,8 +6,10 @@ from createRecord.img2points import img2points,patternMatch
 from createRecord.isPuyoColor import field2array
 from detectFirstChain import detectFirstChain
 from detectNextColor import detectNextColor
+from detectRensa import detectRensa
 import json
 import math
+import time
 
 debugF = False
 
@@ -192,7 +194,7 @@ def view_s_field(f):
             elif puyo is 'PURPLE':
                 sys.stdout.write(pycolor.PURPLE + "● " + pycolor.END)
             elif puyo is 'OJAMA':
-                sys.stdout.write(pycolor.PURPLE + "● " + pycolor.END)
+                sys.stdout.write(pycolor.WHITE + "● " + pycolor.END)
 
         sys.stdout.write("|\n")
     print("---------------")
@@ -458,11 +460,99 @@ def isFallPuyo(field,nextField):
 
     f = copy2DArray(field)
     f.pop(0)
-    for i in range(len(f)):
-        for j in range(len(f[0])):
-            if nextField[i][j] == 'OJAMA' and f[i][j] != nextField[i][j]:
+    print(len(f),len(f[0]))
+    for i in range(12):
+        for j in range(6):
+            # 色ぷよの下に新しいおじゃまはない
+            if nextField[i][j] != 'OJAMA' and nextField[i][j] != 'NULL':
+                break
+            if nextField[i][j] == 'OJAMA' and f[i][j] == 'NULL':
                 return True
     return False
+
+def ojamaRemove(field,nextField):
+    # def remove(field,nextField):
+    #     f = copy2DArray(field)
+    #     nf = copy2DArray(nextField)
+    #     for i in range(f):
+    #         for j in range(f[0]):
+    #             if f[i][j] != nf[i][j] and nf[i][j] == 'OJAMA':
+    #                 nf[i][j] = 'NULL'
+    #     return nf
+    f = copy2DArray(field)
+    nf = copy2DArray(nextField)
+    # print(len(f),len(nf))
+    if len(f) > len(nf):
+        f.pop(0)
+    ojama = []
+    count_max = 0
+    count_min = 5
+    for j in range(6):
+        count = 0
+        top_ojama_flag = False
+        for i in range(12):
+            # 前回のフィールドと異なる部分のみ扱う
+            if f[i][j] != nf[i][j]:
+                # おじゃまでも空白でもなければ色ぷよ
+                if nf[i][j] != 'OJAMA' and nf[i][j] != 'NULL':
+                    break
+                if nf[i][j] == 'OJAMA':
+                    # print(i,j,"をNULLにしました")
+                    count+=1
+                    nf[i][j] = 'NULL'
+                    if i == 0:
+                        top_ojama_flag = True
+            # 空白の場合は関係ない
+            elif nf[i][j] == 'NULL':
+                continue
+            # 空白以外で同じ要素があった場合終了する．そこがおじゃまであったとしても．
+            else:
+                break
+        if count != 0:
+            ojama.append([j,count])
+            # 最上段がおじゃまの場合，見えてる範囲におじゃまが振りきってない可能性があるため除外する
+            if not top_ojama_flag:
+                count_max = count if count_max < count else count_max               
+                count_min = count if count < count_min else count_min
+    
+    # 1段以上降った場合
+    if len(ojama) == 6:
+        # おじゃまの最大値と最小値より，降ったおじゃまの差が1以内であるか確認する．
+        if count_max - count_min == 0:
+            return nf,[count_min,[]]
+        elif count_max - count_min == 1:
+            fall = []
+            for o in ojama:
+                if o[1] == count_max:
+                    fall.append(o[0])
+            return nf,[count_min,fall]
+        else:
+            print("おじゃまぷよの降った数が列により2つ以上異なっている")
+
+    else:
+        print("おじゃまを検知できていない段がある")
+        pass
+    
+    return f,ojama
+
+def ojamaFall(field,ojama):
+    f = copy2DArray(field)
+    # 各列ごとの落とすぷよの入った配列を作る．
+    o = [ojama[0] for i in range(6)]
+    if len(ojama[1]) != 0:
+        for p in ojama[1]:
+            o[p]+=1
+    # おじゃまを降らせる
+    # 全ての段に降るものから行う
+    for i in range(ojama[0]):
+        for j in range(6):
+            f[0][j] = 'OJAMA' if f[0][j] == 'NULL' else f[0][j]
+        f = fallPuyo(f)
+    # 多く降る部分がある場合はそれを降らす
+    return f
+    
+
+
 
 def detectOperate(field,next,player,point,frame,nextFrame):
     img = cv2.imread('./tmp/'+str(nextFrame)+'.png')
@@ -487,8 +577,13 @@ def detectOperate(field,next,player,point,frame,nextFrame):
     # 誤検知対策
     nextField = preprocessingField(nextField)
     # おじゃま落下があるか確認し，ある場合は，前処理を行う
+    ojama = []
     if isFallPuyo(field,nextField):
-        pass
+        # print("おじゃまが振りました")
+        view_s_field(nextField)
+        nextField,ojama = ojamaRemove(field,nextField)
+        view_s_field(nextField)
+        # print(ojama)
 
     candidate = detect(field,nextField,next)
     if type(candidate) is bool:
@@ -497,18 +592,26 @@ def detectOperate(field,next,player,point,frame,nextFrame):
         if isX(f,player):
            nextField[0][2] = 'NULL'
         nextField = preprocessingField(nextField)
+        if isFallPuyo(field,nextField):
+            # print("おじゃまが振りました")
+            view_s_field(nextField)
+            nextField,ojama = ojamaRemove(field,nextField)
+            view_s_field(nextField)
         candidate = detect(field,nextField,next)
 
     # 確定出来た場合
     if type(candidate) is dict:
-        return candidate,p
+        return candidate,p,ojama
+    # 複数あった場合
     elif type(candidate) is list:
-        pass
+        print("着手候補が複数あります")
     # 候補が複数存在する場合
     print("来ちゃった///")
 
-def fieldUpDate(field,next,x,r,player,putFrame):
+def fieldUpDate(field,next,x,r,player,putFrame,ojama):
     f = runChain(putPuyo(field,next,x,r))
+    if len(ojama) != 0:
+        f = ojamaFall(f,ojama)
     return f
 
 def createRecord():
@@ -518,13 +621,12 @@ def createRecord():
     # }
     f_list = {
         "1p" : [14440, 14464, 14491, 14517, 14542, 14572, 14597, 14623, 14647, 14687, 14714, 14747, 14771, 14795,14819, 14842, 14874, 14894, 14917, 14939, 14960, 14983, 15014, 15034, 15053, 15072, 15093, 15125, 15153, 15191, 15209, 15227, 15244, 15262, 15279, 15725, 15753, 15776],
-        "2p" : [14440, 14464, 14491, 14517, 14540, 14566, 14593, 14620, 14649, 14670, 14694, 14729, 14752, 14777, 14797, 14824, 14842, 14869, 14895, 14920, 14937, 14967, 14995, 15020, 15037, 15059, 15079, 15099, 15119, 15288, 15545, 15566, 15590, 15613, 15677, 15696]
+        "2p" : [14440, 14464, 14491, 14517, 14540, 14566, 14593, 14620, 14649, 14670, 14694, 14729, 14752, 14777, 14797, 14824, 14842, 14869, 14895, 14920, 14937, 14967, 14995, 15020, 15037, 15059, 15079, 15099, 15119, 15288, 15545, 15566, 15590, 15613, 15677, 15696,15767]
     }
 
-    if len(f_list["1p"]) > len(f_list["2p"]):
-        next_list = detectNextColor(f_list["1p"],"1p")
-    else:
-        next_list = detectNextColor(f_list["2p"],"2p")
+    # f_listの長い方でネクストを見る
+    long_player = "1p" if len(f_list["1p"]) > len(f_list["2p"]) else "2p"
+    next_list = detectNextColor(f_list[long_player],long_player)
 
     field = {
         "1p" : [['NULL' for i in range(6)] for j in range(13)],
@@ -546,46 +648,133 @@ def createRecord():
         "2p":0
     }
 
-    players = ["2p","1p"]
+    """
+        {
+            player : "1p"or"2p"
+            frame : 落下予定フレーム（それ以降に置いたら落下する）
+            operate : {
+                "x":x,
+                "r":r
+            },
+            point : 保有ポイント    
+        }
+    """
+    puts = []
+    puts_p = {
+        "1p":[],
+        "2p":[]
+    }
+
+    """
+        {
+            player : "1p"or"2p"
+            frame : 落下予定フレーム（それ以降に置いたら落下する）
+            count : おじゃまの数
+        }
+    """
+    ojama = []
+
+    record = ""
+
+    players = ["1p","2p"]
 
     for player in players:
         print(player,"の記録を開始します")
         print(f_list[player])
         for i in range(len(f_list[player])-1):
             prev_point[player] = point[player]
-            candidate,point[player] = detectOperate(field[player],next_list[i],player,point[player],f_list[player][i],f_list[player][i+1])
+            candidate,point[player],fall = detectOperate(field[player],next_list[i],player,point[player],f_list[player][i],f_list[player][i+1])
             remaining_point[player] += point[player] - prev_point[player]
+            if len(fall) == 0:
+                puts.append({
+                    "player":player,
+                    "frame":f_list[player][i+1],
+                    "operate":candidate,
+                    "point":remaining_point[player]
+                })
+                puts_p[player].append({
+                    "frame":f_list[player][i+1],
+                    "operate":candidate,
+                    "point":remaining_point[player]
+                })
+            else:
+                puts.append({
+                    "player":player,
+                    "frame":f_list[player][i+1],
+                    "operate":candidate,
+                    "point":remaining_point[player],
+                    "ojama":fall
+                })
+                puts_p[player].append({
+                    "frame":f_list[player][i+1],
+                    "operate":candidate,
+                    "point":remaining_point[player],
+                    "ojama":fall
+                })
             print(candidate)
             # fieldの更新
-            field[player] = fieldUpDate(field[player],next_list[i],candidate["x"],candidate["r"],player,f_list[player][i])
+            field[player] = fieldUpDate(field[player],next_list[i],candidate["x"],candidate["r"],player,f_list[player][i],fall)
             # runChain(putPuyo(field,next_list[i],candidate["x"],candidate["r"]))
             print(f_list[player][i+1],"フレーム ","次のツモは，",next_list[i+1])
             view_s_field(field[player])
             # 連鎖発生時
             if point[player] - prev_point[player] >= 70:
                 print("連鎖発生！ ",math.floor(remaining_point[player]/70),"個のおじゃまを送ります")
+                ojama.append({
+                    "player":player,
+                    "frame":f_list[player][i+1],
+                    "nanteme":i+1,
+                    "time": f_list[player][i+1]-f_list[player][i],
+                    "point": remaining_point[player],
+                    "count":math.floor(remaining_point[player]/70),
+                    "rensa": detectRensa(f_list[player][i],f_list[player][i+1],player)
+                })
                 remaining_point[player] = point[player]%70
             print("保有得点 : ",remaining_point[player])
             if i == len(f_list[player])-2:
-                print("試合終了")        
+                print("試合終了")
+            if debugF:
+                time.sleep(2)
+    
+    # ここから記録生成
+    ojama = sorted(ojama,key=lambda x:x["frame"])
+    puts = sorted(puts,key=lambda x:x["frame"])
+    print(ojama)
+    # print(put)
+    c = {
+        "1p":1,
+        "2p":1
+    }
+    # str(next_list[c[put["player"]]][0]) + "-" + str(next_list[c[put["player"]]][1])
+    record += "-- 試合情報 --\n"
+    record += "ぷよぷよクロニクル 第２回おいうリーグ S級リーグ まはーら vs makkyu 50先 実況枠\n"
+    record += "1P : まはーら，2P : makkyu\n"
+    record += "タグ : おいうリーグ，第２回おいうリーグ，S級，第２回おいうリーグS級\n"
+    record += "-- 着手 --\n" 
+    for put in puts:
+        record += str(put["player"]) + " " + str(c[put["player"]])+"手目（"+str(put["frame"])+"） "+"-".join(next_list[c[put["player"]]])+" "+ str(put["point"])
+        record += "\n"
+    record += "-- おじゃま遷移 --\n"
+    for o in ojama:
+        record += str(put["player"]) + " " + str(o["nanteme"])+"手目 " + str(o["frame"]) +" "+str(o["point"])+"（"+str(o["count"])+"）\n"
+
+
+    # print(record)
+    with open("./kihu.text", mode='w') as f:
+        f.write(record)
+
+    with open("./kihu.json","w") as f:
+        json.dump({
+            "puts" : puts_p,
+            "next_list": next_list,
+            "ojama" : ojama
+        },f,ensure_ascii=False)
+
+
 
 
 if __name__ == "__main__":
     createRecord()
-
-    # print(isX(15279,"1p"))
-    # field = [
-    #     ['GREEN', 'NULL', 'NULL', 'NULL', 'NULL', 'GREEN'], 
-    #     ['GREEN', 'YELLOW', 'NULL', 'NULL', 'NULL', 'GREEN'],
-    #      ['YELLOW', 'GREEN', 'PURPLE', 'YELLOW', 'NULL', 'PURPLE'], 
-    #      ['YELLOW', 'RED', 'RED', 'PURPLE', 'PURPLE', 'PURPLE'], 
-    #      ['RED', 'YELLOW', 'GREEN', 'YELLOW', 'RED', 'PURPLE'],
-    #       ['GREEN', 'GREEN', 'YELLOW', 'YELLOW', 'PURPLE', 'GREEN'], 
-    #       ['GREEN', 'PURPLE', 'GREEN', 'GREEN', 'YELLOW', 'GREEN'], 
-    #       ['RED', 'RED', 'GREEN', 'YELLOW', 'GREEN', 'PURPLE'], ['PURPLE', 'PURPLE', 'RED', 'GREEN', 'PURPLE', 'RED'], ['PURPLE', 'YELLOW', 'GREEN', 'PURPLE', 'YELLOW', 'RED'], ['YELLOW', 'PURPLE', 'GREEN', 'PURPLE', 'RED', 'YELLOW'], ['YELLOW', 'YELLOW', 'PURPLE', 'GREEN', 'GREEN', 'YELLOW'], ['PURPLE', 'PURPLE', 'GREEN', 'RED', 'RED', 'YELLOW']]
-    # view_s_field(field)
-    # field = runChain(field)
-    # view_s_field(field)
 
 # if __name__ == "__main__":
 #     img = cv2.imread('./tmp/14545.png')

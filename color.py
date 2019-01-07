@@ -26,7 +26,7 @@ SCREEN_ONLY = True
 
 
 # img = cv2.imread('./test/sample.jpg')
-img = cv2.imread("./tmp/9733.png")
+img = cv2.imread("./tmp/14370.png")
 
 # plt.imshow(img)
 # plt.show()
@@ -48,17 +48,17 @@ with open('./current.json') as f:
 
 # 枠線つける
 #field
-v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),5)
+v_img = cv2.rectangle(rgb_img,(area["field"]["1p"],area["field"]["top"]),(area["field"]["1p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(255,0,0),10)
+v_img = cv2.rectangle(rgb_img,(area["field"]["2p"],area["field"]["top"]),(area["field"]["2p"]+area["field"]["width"],area["field"]["top"]+area["field"]["height"]),(0,0,255),10)
 #next
-v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),5)
+v_img = cv2.rectangle(rgb_img,(area["next"]["1p"],area["next"]["top"]),(area["next"]["1p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(255,0,0),10)
+v_img = cv2.rectangle(rgb_img,(area["next"]["2p"],area["next"]["top"]),(area["next"]["2p"]+area["next"]["width"],area["next"]["top"]+area["next"]["height"]),(0,0,255),10)
 #wnext
-v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),5)
+v_img = cv2.rectangle(rgb_img,(area["wnext"]["1p"],area["wnext"]["top"]),(area["wnext"]["1p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(255,0,0),10)
+v_img = cv2.rectangle(rgb_img,(area["wnext"]["2p"],area["wnext"]["top"]),(area["wnext"]["2p"]+area["wnext"]["width"],area["wnext"]["top"]+area["wnext"]["height"]),(0,0,255),10)
 #points
-v_img = cv2.rectangle(rgb_img,(area["points"]["1p"],area["points"]["top"]),(area["points"]["1p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(255,0,0),5)
-v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area["points"]["2p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(0,0,255),5)
+# v_img = cv2.rectangle(rgb_img,(area["points"]["1p"],area["points"]["top"]),(area["points"]["1p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(255,0,0),10)
+# v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area["points"]["2p"]+area["points"]["width"],area["points"]["top"]+area["points"]["height"]),(0,0,255),10)
 
 # C_IMG = {
 #     "RED":extractColor(img,np.array([178,130,128]),np.array([180,255,255])),
@@ -73,14 +73,17 @@ v_img = cv2.rectangle(rgb_img,(area["points"]["2p"],area["points"]["top"]),(area
 # for color in C_IMG:
 #     cv2.imwrite(color+".png",C_IMG[color])
 
-# cv2.imwrite("border2.png",v_img)
+# cv2.imwrite("_border.png",cv2.cvtColor(v_img, cv2.COLOR_BGR2RGB))
+lower_frame_r = np.array([165,60,160])
+upper_frame_r = np.array([180,150,255])
+ex_img = extractColor(img,np.array([165,60,160]),np.array([180,150,255]))
+# plt.imshow(ex_img)
+# plt.show()
+cv2.imwrite("border_white.png",ex_img)
+# _,field = field2array(img,area)
+# points = img2points(img,area)
+# viewAll(field,points)
 
-plt.imshow(v_img)
-plt.show()
-
-_,field = field2array(img,area)
-points = img2points(img,area)
-viewAll(field,points)
 # for i in range(12):
 #     for j in range(6):
 #         if p2["field"]["1p"][i][j]:
